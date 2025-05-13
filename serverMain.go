@@ -3,6 +3,7 @@ package main
 import (
 	"html/template"
 	"log"
+	"net/http"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -14,14 +15,16 @@ func main() {
 	r := gin.Default()
 	r.Use(cors.Default())
 
+	r.Static("/resources/static", "./resources/static")
+
 	r.SetHTMLTemplate(template.Must(template.ParseFiles("resources/index.html")))
 
 	r.GET("/", func(c *gin.Context) {
-		c.HTML(200, "index.html", nil)
+		c.HTML(http.StatusOK, "index.html", nil)
 	})
 
 	r.GET("/api/lastMessages", func(c *gin.Context) {
-		c.JSON(200, gin.H{
+		c.JSON(http.StatusOK, gin.H{
 			"messages": chatdb.GetLast20Messages(),
 		})
 	})
