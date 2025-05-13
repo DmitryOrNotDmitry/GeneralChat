@@ -41,18 +41,19 @@
         }
     </style>
 </head>
-<body class="p-4 bg-light">
-    <div class="container">
-        <h1 class="mb-4">Анонимный чат</h1>
+<body class="bg-light" style="height: 100vh; margin: 0;">
+    <div class="d-flex flex-column h-100">
+        <div class="container py-4 flex-grow-1 d-flex flex-column">
+            <h1 class="mb-4">Анонимный чат</h1>
 
-        <div id="chat" class="chat-messages"></div>
-        
-        <div class="mb-3 d-flex gap-2">
-            <input type="text" id="username" class="form-control" placeholder="Ваш ник" value="Гость_123">
-            <input type="text" id="message" class="form-control" placeholder="Сообщение">
-            <button class="btn btn-primary" onclick="sendMessage()">Отправить</button>
+            <div id="chat" class="chat-messages flex-grow-1 mb-3"></div>
+
+            <div class="d-flex gap-2">
+                <input type="text" id="username" class="form-control" placeholder="Ваш ник" value="Noname">
+                <input type="text" id="message" class="form-control" placeholder="Сообщение">
+                <button class="btn btn-primary" onclick="sendMessage()">Отправить</button>
+            </div>
         </div>
-
     </div>
 
     <script>
@@ -92,5 +93,41 @@
             document.getElementById("message").value = "";
         }
     </script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        fetch("/api/lastMessages")
+            .then(response => response.json())
+            .then(data => {
+                const messages = data.messages;
+                const currentUser = document.getElementById("username").value || "Noname";
+
+                messages.reverse();
+
+                for (const msg of messages) {
+                    const msgContainer = document.createElement("div");
+                    msgContainer.className = "d-flex flex-column " + (msg.username === currentUser ? "align-items-end" : "align-items-start");
+
+                    const bubble = document.createElement("div");
+                    bubble.className = "message " + (msg.username === currentUser ? "self" : "other");
+
+                    const nameEl = document.createElement("div");
+                    nameEl.className = "username";
+                    nameEl.textContent = msg.username;
+
+                    const textEl = document.createElement("div");
+                    textEl.textContent = msg.message;
+
+                    bubble.appendChild(nameEl);
+                    bubble.appendChild(textEl);
+                    msgContainer.appendChild(bubble);
+                    chatDiv.appendChild(msgContainer);
+                }
+
+                chatDiv.scrollTop = chatDiv.scrollHeight;
+            })
+            .catch(err => console.error("Ошибка загрузки сообщений:", err));
+    });
+</script>
 </body>
 </html>

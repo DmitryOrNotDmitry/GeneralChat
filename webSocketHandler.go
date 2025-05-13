@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -24,13 +25,20 @@ func handleConnections(c *gin.Context) {
 	clients[ws] = true
 
 	for {
-		var msg map[string]string
-		err := ws.ReadJSON(&msg)
+		var data map[string]string
+		err := ws.ReadJSON(&data)
 		if err != nil {
 			delete(clients, ws)
 			break
 		}
-		broadcastMessage(msg)
+
+		broadcastMessage(data)
+
+		chatdb.SaveMessage(gin.H{
+			"username":  data["username"],
+			"message":   data["message"],
+			"timestamp": time.Now(),
+		})
 	}
 }
 
