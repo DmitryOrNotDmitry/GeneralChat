@@ -1,7 +1,7 @@
 function receiveMessage(event) {
     const chatDiv = document.getElementById("chat");
     const msg = JSON.parse(event.data);
-    const currentUser = document.getElementById("username").value || "Noname";
+    const currentUser = document.getElementById("username_input").value || "Noname";
 
     const msgContainer = document.createElement("div");
     msgContainer.className = "d-flex flex-column " + (msg.username === currentUser ? "align-items-end" : "align-items-start");
@@ -25,7 +25,7 @@ function receiveMessage(event) {
 };
 
 function sendMessage() {
-    const username = document.getElementById("username").value || "Noname";
+    const username = document.getElementById("username_input").value || "Noname";
     const message = document.getElementById("message").value;
     if (message.trim() === "") return;
     ws.send(JSON.stringify({ username, message }));
@@ -38,7 +38,7 @@ function loadRecentMessages() {
         .then(response => response.json())
         .then(data => {
             const messages = data.messages;
-            const currentUser = document.getElementById("username").value || "Noname";
+            const currentUser = document.getElementById("username_input").value || "Noname";
             const chatDiv = document.getElementById("chat");
 
             messages.reverse();
@@ -68,3 +68,12 @@ function loadRecentMessages() {
         .catch(err => console.error("Ошибка загрузки сообщений:", err));
 }
 
+function updateMessageStyles() {
+    const currentUsername = document.getElementById("username_input").value.trim();
+
+    document.querySelectorAll(".message").forEach(msg => {
+        const [author] = msg.getElementsByClassName("username")[0]?.textContent.split(":");
+        msg.classList.remove("self", "other");
+        msg.classList.add(author === currentUsername ? "self" : "other");
+    });
+}
