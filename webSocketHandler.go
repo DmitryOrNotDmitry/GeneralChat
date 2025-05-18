@@ -25,24 +25,21 @@ func handleConnections(c *gin.Context) {
 	clients[ws] = true
 
 	for {
-		var data map[string]string
-		err := ws.ReadJSON(&data)
+		var msg Message
+		err := ws.ReadJSON(&msg)
 		if err != nil {
 			delete(clients, ws)
 			break
 		}
+		msg.Timestamp = time.Now()
 
-		broadcastMessage(data)
-
-		chatdb.SaveMessage(gin.H{
-			"username":  data["username"],
-			"message":   data["message"],
-			"timestamp": time.Now(),
-		})
+		broadcastMessage(msg)
+		chatdb.SaveMessage(msg)
+		chatCache.AddMessage(msg)
 	}
 }
 
-func broadcastMessage(msg map[string]string) {
+func broadcastMessage(msg Message) {
 	for client := range clients {
 		err := client.WriteJSON(msg)
 		if err != nil {

@@ -9,7 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var chatdb ChatDB = *CreateChatDB()
+var chatdb = CreateChatDB()
+var chatCache = CreateChatCache()
 
 func main() {
 	r := gin.Default()
@@ -25,7 +26,7 @@ func main() {
 
 	r.GET("/api/lastMessages", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"messages": chatdb.GetLast20Messages(),
+			"messages": GetLast20Messages(),
 		})
 	})
 
