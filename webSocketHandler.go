@@ -1,6 +1,7 @@
 package main
 
 import (
+	"generalChat/entity"
 	"log"
 	"net/http"
 	"time"
@@ -25,7 +26,7 @@ func handleConnections(c *gin.Context) {
 	clients[ws] = true
 
 	for {
-		var msg Message
+		var msg entity.Message
 		err := ws.ReadJSON(&msg)
 		if err != nil {
 			delete(clients, ws)
@@ -39,7 +40,7 @@ func handleConnections(c *gin.Context) {
 	}
 }
 
-func broadcastMessage(msg Message) {
+func broadcastMessage(msg entity.Message) {
 	for client := range clients {
 		err := client.WriteJSON(msg)
 		if err != nil {

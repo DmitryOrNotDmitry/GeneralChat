@@ -1,8 +1,9 @@
-package main
+package infra
 
 import (
 	"context"
 	"encoding/json"
+	"generalChat/entity"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -21,7 +22,7 @@ func CreateChatCache() *ChatCache {
 const chatKey = "chat:messages"
 const maxMessages = 20
 
-func (c *ChatCache) AddMessage(msg Message) error {
+func (c *ChatCache) AddMessage(msg entity.Message) error {
 	data, err := json.Marshal(msg)
 	if err != nil {
 		return err
@@ -37,7 +38,7 @@ func (c *ChatCache) AddMessage(msg Message) error {
 	return c.cache.LTrim(ctx, chatKey, 0, maxMessages-1).Err()
 }
 
-func (c *ChatCache) GetRecentMessages() ([]Message, error) {
+func (c *ChatCache) GetRecentMessages() ([]entity.Message, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -46,9 +47,9 @@ func (c *ChatCache) GetRecentMessages() ([]Message, error) {
 		return nil, err
 	}
 
-	messages := make([]Message, 0, len(values))
+	messages := make([]entity.Message, 0, len(values))
 	for _, val := range values {
-		var msg Message
+		var msg entity.Message
 		if err := json.Unmarshal([]byte(val), &msg); err == nil {
 			messages = append(messages, msg)
 		}

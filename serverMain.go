@@ -1,6 +1,8 @@
 package main
 
 import (
+	infra "generalChat/infrastructure"
+	"generalChat/services"
 	"html/template"
 	"log"
 	"net/http"
@@ -9,8 +11,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var chatdb = CreateChatDB()
-var chatCache = CreateChatCache()
+var chatdb = infra.CreateChatDB()
+var chatCache = infra.CreateChatCache()
+var chatService = &services.MessageService{
+	ChatRepo:  chatdb,
+	ChatCache: chatCache,
+}
 
 func main() {
 	r := gin.Default()
@@ -26,7 +32,7 @@ func main() {
 
 	r.GET("/api/lastMessages", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"messages": GetLast20Messages(),
+			"messages": chatService.GetLast20Messages(),
 		})
 	})
 

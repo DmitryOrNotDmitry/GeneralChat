@@ -1,7 +1,8 @@
-package main
+package infra
 
 import (
 	"context"
+	"generalChat/entity"
 	"log"
 	"time"
 
@@ -27,7 +28,7 @@ func CreateChatDB() *ChatDB {
 	return &ChatDB{client}
 }
 
-func (db *ChatDB) SaveMessage(message Message) {
+func (db *ChatDB) SaveMessage(message entity.Message) {
 	messages := db.client.Database("chatdb").Collection("messages")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -39,7 +40,7 @@ func (db *ChatDB) SaveMessage(message Message) {
 	}
 }
 
-func (db *ChatDB) GetLastNMessages(n int64) []Message {
+func (db *ChatDB) GetLastNMessages(n int64) []entity.Message {
 	messages := db.client.Database("chatdb").Collection("messages")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -51,7 +52,7 @@ func (db *ChatDB) GetLastNMessages(n int64) []Message {
 	}
 	defer cursor.Close(ctx)
 
-	var result []Message
+	var result []entity.Message
 	if err := cursor.All(ctx, &result); err != nil {
 		log.Fatal(err)
 	}
