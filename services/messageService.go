@@ -33,6 +33,6 @@ func (ms *MessageService) GetLast20Messages() []entity.Message {
 		return msgs
 	}
 
-	fmt.Println("Данные берутся из Redis")
+	fmt.Println("Данные берутся из кэша")
 	return cachesMsgs
 }
