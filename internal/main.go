@@ -15,12 +15,16 @@ import (
 
 var chatdb = repo.CreateChatDB()
 var chatCache = repo.CreateChatCache()
+var wshandler = controller.ConstructorWSHandler(chatdb, chatCache)
+
 var chatService = &service.MessageService{
 	ChatRepo:  chatdb,
 	ChatCache: chatCache,
 }
 
 func main() {
+	defer chatdb.Close()
+
 	r := gin.Default()
 	r.Use(cors.Default())
 
@@ -38,8 +42,7 @@ func main() {
 		})
 	})
 
-	r.GET("/ws", controller.HandleConnections)
-	defer chatdb.Close()
+	r.GET("/ws", wshandler.HandleConnections)
 
 	log.Println("Сервер запущен на :8080")
 	r.Run(":8080")
