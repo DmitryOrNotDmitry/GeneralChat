@@ -1,8 +1,7 @@
-package test
+package service
 
 import (
 	"generalChat/internal/model"
-	"generalChat/internal/service"
 
 	"fmt"
 	"testing"
@@ -45,7 +44,7 @@ func TestGetLast20Messages_FromCache(t *testing.T) {
 	cachedMsgs := make([]model.Message, 20)
 	mockCache.On("GetRecentMessages").Return(cachedMsgs, nil)
 
-	mService := service.MessageService{ChatRepo: mockRepo, ChatCache: mockCache}
+	mService := MessageService{ChatRepo: mockRepo, ChatCache: mockCache}
 	result := mService.GetLast20Messages()
 
 	assert.Equal(t, cachedMsgs, result)
@@ -63,7 +62,7 @@ func TestGetLast20Messages_FromRepo(t *testing.T) {
 	mockRepo.On("GetLastNMessages", int64(20)).Return(dbMsgs)
 	mockCache.On("AddMessage", mock.Anything).Return(nil)
 
-	mService := service.MessageService{ChatRepo: mockRepo, ChatCache: mockCache}
+	mService := MessageService{ChatRepo: mockRepo, ChatCache: mockCache}
 	result := mService.GetLast20Messages()
 
 	assert.Equal(t, dbMsgs, result)
@@ -81,7 +80,7 @@ func TestGetLast20Messages_CacheError(t *testing.T) {
 	mockRepo.On("GetLastNMessages", int64(20)).Return(dbMsgs)
 	mockCache.On("AddMessage", mock.Anything).Return(nil)
 
-	mService := service.MessageService{ChatRepo: mockRepo, ChatCache: mockCache}
+	mService := MessageService{ChatRepo: mockRepo, ChatCache: mockCache}
 	result := mService.GetLast20Messages()
 
 	assert.Equal(t, dbMsgs, result)
