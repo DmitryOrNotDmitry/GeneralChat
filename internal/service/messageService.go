@@ -1,18 +1,18 @@
-package services
+package service
 
 import (
 	"fmt"
-	"generalChat/entity"
+	"generalChat/internal/model"
 )
 
 type MessageRepository interface {
-	SaveMessage(message entity.Message)
-	GetLastNMessages(n int64) []entity.Message
+	SaveMessage(message model.Message)
+	GetLastNMessages(n int64) []model.Message
 }
 
 type MessageCache interface {
-	AddMessage(msg entity.Message) error
-	GetRecentMessages() ([]entity.Message, error)
+	AddMessage(msg model.Message) error
+	GetRecentMessages() ([]model.Message, error)
 }
 
 type MessageService struct {
@@ -20,7 +20,7 @@ type MessageService struct {
 	ChatCache MessageCache
 }
 
-func (ms *MessageService) GetLast20Messages() []entity.Message {
+func (ms *MessageService) GetLast20Messages() []model.Message {
 	cachesMsgs, _ := ms.ChatCache.GetRecentMessages()
 	if len(cachesMsgs) < 20 {
 		fmt.Println("Данные берутся из БД")

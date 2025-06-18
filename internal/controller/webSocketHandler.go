@@ -1,7 +1,7 @@
-package main
+package controller
 
 import (
-	"generalChat/entity"
+	"generalChat/internal/model"
 	"log"
 	"net/http"
 	"time"
@@ -16,7 +16,7 @@ var upgrader = websocket.Upgrader{
 
 var clients = make(map[*websocket.Conn]bool)
 
-func handleConnections(c *gin.Context) {
+func HandleConnections(c *gin.Context) {
 
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
@@ -26,7 +26,7 @@ func handleConnections(c *gin.Context) {
 	clients[ws] = true
 
 	for {
-		var msg entity.Message
+		var msg model.Message
 		err := ws.ReadJSON(&msg)
 		if err != nil {
 			delete(clients, ws)
@@ -35,12 +35,12 @@ func handleConnections(c *gin.Context) {
 		msg.Timestamp = time.Now()
 
 		broadcastMessage(msg)
-		chatdb.SaveMessage(msg)
-		chatCache.AddMessage(msg)
+		//chatdb.SaveMessage(msg)
+		//chatCache.AddMessage(msg)
 	}
 }
 
-func broadcastMessage(msg entity.Message) {
+func broadcastMessage(msg model.Message) {
 	for client := range clients {
 		err := client.WriteJSON(msg)
 		if err != nil {

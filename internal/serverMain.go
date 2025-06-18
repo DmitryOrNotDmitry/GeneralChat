@@ -1,8 +1,10 @@
 package main
 
 import (
-	infra "generalChat/infrastructure"
-	"generalChat/services"
+	"generalChat/internal/controller"
+	"generalChat/internal/repo"
+	"generalChat/internal/service"
+
 	"html/template"
 	"log"
 	"net/http"
@@ -11,9 +13,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var chatdb = infra.CreateChatDB()
-var chatCache = infra.CreateChatCache()
-var chatService = &services.MessageService{
+var chatdb = repo.CreateChatDB()
+var chatCache = repo.CreateChatCache()
+var chatService = &service.MessageService{
 	ChatRepo:  chatdb,
 	ChatCache: chatCache,
 }
@@ -36,7 +38,7 @@ func main() {
 		})
 	})
 
-	r.GET("/ws", handleConnections)
+	r.GET("/ws", controller.HandleConnections)
 	defer chatdb.Close()
 
 	log.Println("Сервер запущен на :8080")
