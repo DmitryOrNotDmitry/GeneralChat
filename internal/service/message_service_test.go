@@ -14,13 +14,14 @@ type MockRepo struct {
 	mock.Mock
 }
 
-func (m *MockRepo) SaveMessage(message model.Message) {
-	m.Called(message)
+func (m *MockRepo) SaveMessage(message model.Message) error {
+	args := m.Called(message)
+	return args.Error(0)
 }
 
-func (m *MockRepo) GetLastNMessages(n int64) []model.Message {
+func (m *MockRepo) GetLastNMessages(n int64) ([]model.Message, error) {
 	args := m.Called(n)
-	return args.Get(0).([]model.Message)
+	return args.Get(0).([]model.Message), args.Error(1)
 }
 
 type MockCache struct {

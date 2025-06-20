@@ -103,7 +103,7 @@ func (wsh *WSHandler) broadcastMessage(msg model.Message) {
 	}
 }
 
-func (wsh *WSHandler) Close(msg model.Message) {
+func (wsh *WSHandler) Close() {
 	actions := make([]ClientAction, 0)
 	wsh.mu.RLock()
 	for client := range wsh.clients {
@@ -116,4 +116,5 @@ func (wsh *WSHandler) Close(msg model.Message) {
 		wsh.clientActions <- action
 	}
 
+	close(wsh.clientActions)
 }

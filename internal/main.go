@@ -24,6 +24,7 @@ var chatService = &service.MessageService{
 
 func main() {
 	defer chatdb.Close()
+	defer wshandler.Close()
 
 	r := gin.Default()
 	r.Use(cors.Default())

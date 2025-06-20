@@ -1,13 +1,13 @@
 package service
 
 import (
-	"fmt"
 	"generalChat/internal/model"
+	"log"
 )
 
 type MessageRepository interface {
-	SaveMessage(message model.Message)
-	GetLastNMessages(n int64) []model.Message
+	SaveMessage(message model.Message) error
+	GetLastNMessages(n int64) ([]model.Message, error)
 }
 
 type MessageCache interface {
@@ -23,8 +23,8 @@ type MessageService struct {
 func (ms *MessageService) GetLast20Messages() []model.Message {
 	cachesMsgs, _ := ms.ChatCache.GetRecentMessages()
 	if len(cachesMsgs) < 20 {
-		fmt.Println("Данные берутся из БД")
-		msgs := ms.ChatRepo.GetLastNMessages(20)
+		log.Println("Данные берутся из БД")
+		msgs, _ := ms.ChatRepo.GetLastNMessages(20)
 
 		for i := len(msgs) - 1; i >= 0; i-- {
 			ms.ChatCache.AddMessage(msgs[i])
@@ -33,6 +33,6 @@ func (ms *MessageService) GetLast20Messages() []model.Message {
 		return msgs
 	}
 
-	fmt.Println("Данные берутся из кэша")
+	log.Println("Данные берутся из кэша")
 	return cachesMsgs
 }
