@@ -11,7 +11,7 @@ import (
 )
 
 type ChatCache struct {
-	cache *redis.Client
+	redis *redis.Client
 }
 
 func CreateChatCache() *ChatCache {
@@ -32,18 +32,18 @@ func (c *ChatCache) AddMessage(msg model.Message) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	if err := c.cache.LPush(ctx, chatKey, data).Err(); err != nil {
+	if err := c.redis.LPush(ctx, chatKey, data).Err(); err != nil {
 		return err
 	}
 
-	return c.cache.LTrim(ctx, chatKey, 0, maxMessages-1).Err()
+	return c.redis.LTrim(ctx, chatKey, 0, maxMessages-1).Err()
 }
 
 func (c *ChatCache) GetRecentMessages() ([]model.Message, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	values, err := c.cache.LRange(ctx, chatKey, 0, -1).Result()
+	values, err := c.redis.LRange(ctx, chatKey, 0, -1).Result()
 	if err != nil {
 		return nil, err
 	}
@@ -56,4 +56,8 @@ func (c *ChatCache) GetRecentMessages() ([]model.Message, error) {
 		}
 	}
 	return messages, nil
+}
+
+func (c *ChatCache) Close() error {
+	return c.redis.Close()
 }

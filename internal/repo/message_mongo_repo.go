@@ -41,10 +41,7 @@ func (db *ChatDB) SaveMessage(message model.Message) error {
 	defer cancel()
 
 	_, err := messages.InsertOne(ctx, message)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (db *ChatDB) GetLastNMessages(n int64) ([]model.Message, error) {
