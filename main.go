@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 var chatdb = repo.CreateChatDB()
@@ -27,10 +28,14 @@ func main() {
 	defer wshandler.Close()
 	defer chatCache.Close()
 
+	controller.InitPrometheus()
+
 	r := gin.Default()
 	r.Use(cors.Default())
+	r.Use(controller.MetricsMiddleware())
+	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
-	r.Static("/resources/static", "./resources/static")
+	r.Static("resources/static", "resources/static")
 
 	r.SetHTMLTemplate(template.Must(template.ParseFiles("resources/index.html")))
 
