@@ -16,7 +16,7 @@ type ChatCache struct {
 
 func CreateChatCache() *ChatCache {
 	return &ChatCache{redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr: "redis-cache:6379",
 	})}
 }
 

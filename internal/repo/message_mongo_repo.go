@@ -21,7 +21,7 @@ func CreateChatDB() *ChatDB {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	clientOpts := options.Client().ApplyURI("mongodb://mongo:mongo@localhost:27017/chatdb?authSource=admin")
+	clientOpts := options.Client().ApplyURI("mongodb://mongo:mongo@mongodb:27017/chatdb?authSource=admin")
 	client, err := mongo.Connect(ctx, clientOpts)
 	if err != nil {
 		log.Fatalf("MongoDB connection error: %v", err)
